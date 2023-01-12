@@ -1,0 +1,95 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'checkstyle'
+    id 'pmd'
+    id 'com.bmuschko.clover' version "2.2.5"
+    id 'com.github.spotbugs' version "4.2.2"
+}
+
+repositories {
+    mavenCentral()
+}
+//-----------------------------BASE CONFIGURATION--------------------------------------------
+clover {
+
+    testIncludes = ['**/*Test.java', '**/*Spec.groovy']
+    testExcludes = ['**/Mock*.java']
+
+    targetPercentage = '75%'
+
+    report {
+        html = true
+        pdf = true
+
+        columns {
+            coveredMethods format: 'longbar', min: '75'
+            coveredStatements format: '%'
+            coveredBranches format: 'raw'
+            totalPercentageCovered format: '%', scope: 'package'
+        }
+
+    }
+}
+dependencies {
+    clover 'org.openclover:clover:4.4.1'
+    testImplementation('org.junit.jupiter:junit-jupiter:5.6.2')
+    testRuntimeOnly ('org.junit.jupiter:junit-jupiter-engine:5.6.2')
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.6.2")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.6.2")
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+checkstyle {
+    toolVersion "7.6.1"
+    checkstyleTest.enabled = false
+}
+
+check.dependsOn cloverGenerateReport
+
+spotbugsMain {
+    reports {
+        html {
+            enabled = true
+            stylesheet = 'fancy-hist.xsl'
+        }
+    }
+}
+
+pmd {
+    ignoreFailures = true
+    pmdTest.enabled=false
+    ruleSets = [
+            'java-basic',
+            'java-braces',
+            'java-clone',
+            'java-codesize',
+            'java-comments',
+            'java-controversial',
+            'java-coupling',
+            'java-design',
+            'java-empty',
+            'java-finalizers',
+            'java-imports',
+            'java-optimizations',
+            'java-strictexception',
+            'java-strings',
+            'java-typeresolution',
+            'java-unnecessary',
+            'java-unusedcode'
+    ]
+}
+
+tasks.withType(Pmd) {
+    reports{
+        xml.enabled=true
+        html.enabled=true
+    }
+}
+
