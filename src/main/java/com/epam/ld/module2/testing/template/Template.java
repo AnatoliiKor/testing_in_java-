@@ -1,16 +1,22 @@
 package com.epam.ld.module2.testing.template;
 
+import com.epam.ld.module2.testing.Utils;
+
 /**
  * The type Template.
  */
 public class Template {
-    private String text;
+    private String templateBody;
 
-    public String getText() {
-        return text;
+    public Template(String templateBodyName) {
+        this.templateBody = Utils.readFileAsString(templateBodyName);
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public String getTemplateBody() {
+        return templateBody;
+    }
+
+    public void setTemplateBody(String templateBody) {
+        this.templateBody = templateBody;
     }
 }

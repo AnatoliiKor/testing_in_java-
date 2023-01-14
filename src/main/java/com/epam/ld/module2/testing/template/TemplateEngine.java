@@ -6,6 +6,7 @@ import com.epam.ld.module2.testing.Client;
  * The type Template engine.
  */
 public class TemplateEngine {
+
     /**
      * Generate message string.
      *

@@ -1,0 +1,13 @@
+*******************************************************************1**
+Dear #{receiverName},
+
+Thank you for your recent resume and letter expressing your interest
+in working for #{companyName}.
+
+Unfortunately, we cannot be very encouraging at this time because we
+have no openings in your area of interest and expertise. However, we
+will keep resume on file for fix months in case such an opportunity
+opens up.
+
+Thank you again for your interest in #{companyName}.
+**********************************************************************
