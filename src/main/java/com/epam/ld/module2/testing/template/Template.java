@@ -8,10 +8,6 @@ import com.epam.ld.module2.testing.Utils;
 public class Template {
     private String templateBody;
 
-    public Template(String templateBodyName) {
-        this.templateBody = Utils.readFileAsString(templateBodyName);
-    }
-
     public String getTemplateBody() {
         return templateBody;
     }
