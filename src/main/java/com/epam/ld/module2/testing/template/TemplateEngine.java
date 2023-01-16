@@ -1,6 +1,7 @@
 package com.epam.ld.module2.testing.template;
 
 import com.epam.ld.module2.testing.Client;
+import com.epam.ld.module2.testing.exception.MissingTagException;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -15,11 +16,12 @@ public class TemplateEngine {
      * Generate message string.
      *
      * @param template the template
-     * @param tags the map of tag values
+     * @param tags     the map of tag values
      * @return the string
      */
     public String generateMessage(Template template, Map<String, String> tags) {
         String result = template.getTemplateBody();
+
         for (String s : tags.keySet()) {
             result = result.replaceAll("#\\{" + s + "}", tags.get(s));
         }
@@ -56,5 +58,13 @@ public class TemplateEngine {
             tags.put(rawTag, sc.nextLine());
         });
         return tags;
+    }
+
+    public boolean checkProvidedTagsForComplicity(String templateBody, Map<String, String> providedTags) {
+        Set<String> requiredTags = findTags(templateBody);
+        requiredTags.forEach(tag -> {
+            if (providedTags.get(tag) == null) throw new MissingTagException("tag is missing: " + tag);
+        });
+        return true;
     }
 }

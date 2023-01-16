@@ -1,4 +1,4 @@
-*******************************************************************1**
+*********************************************************************
 Dear #{receiverName},
 
 Thank you for your recent resume and letter expressing your interest

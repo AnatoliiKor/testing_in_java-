@@ -2,14 +2,21 @@ package com.epam.ld.module2.testing;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UtilsTest {
     Utils utils;
+    @TempDir
+    static Path tempDir;
 
     @BeforeEach
     void startUp() {
@@ -34,7 +41,7 @@ class UtilsTest {
 
     @Test
     public void throwExceptionWhenInputFileNotJsp() {
-        assertThrows(RuntimeException.class, ()->{utils.getMapFromJsonFile("templateTest.txt");});
+        assertThrows(RuntimeException.class, ()-> utils.getMapFromJsonFile("templateTest.txt"));
     }
 
     @Test
@@ -45,5 +52,15 @@ class UtilsTest {
         map.put("two", "two");
         map.put("three", "three");
         assertEquals(expectedString, utils.getAddressesStringFromMap(map));
+    }
+
+
+    @Test
+    void writeToFile() throws IOException {
+        Path filePath = tempDir.resolve("temp.file");
+        utils.writeToFile( "file content", filePath.toFile());
+        String actualTemplate = Files.readAllLines(filePath).stream()
+                .collect(Collectors.joining(System.lineSeparator()));
+        assertTrue(actualTemplate.contains("file content"));
     }
 }

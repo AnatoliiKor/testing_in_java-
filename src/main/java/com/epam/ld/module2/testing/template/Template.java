@@ -1,7 +1,5 @@
 package com.epam.ld.module2.testing.template;
 
-import com.epam.ld.module2.testing.Utils;
-
 /**
  * The type Template.
  */

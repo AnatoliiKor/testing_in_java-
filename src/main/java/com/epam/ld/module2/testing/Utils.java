@@ -3,6 +3,9 @@ package com.epam.ld.module2.testing;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,9 +25,7 @@ public class Utils {
             String data = lines.collect(Collectors.joining("\n"));
             lines.close();
             return data;
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
+        } catch (Exception e) {System.err.println(e.getMessage());}
         return "";
     }
 
@@ -49,4 +50,16 @@ public class Utils {
         return String.join(",", addressesMap.values());
     }
 
+    /**
+     * Write content to file.
+     * @param fileName the absolute or relative path to file.
+     * @param messageContent the content for writing.
+     */
+    public void writeToFile(String messageContent, File fileName) {
+        try (PrintWriter out = new PrintWriter(fileName)) {
+           out.println(messageContent);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 }

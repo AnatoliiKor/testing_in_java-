@@ -3,18 +3,14 @@ package com.epam.ld.module2.testing;
 import com.epam.ld.module2.testing.template.Template;
 import com.epam.ld.module2.testing.template.TemplateEngine;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 
 class MessengerTest {
@@ -23,7 +19,6 @@ class MessengerTest {
 
     @BeforeEach
     void startUp() {
-
         messenger = new Messenger(new MailServer(), new TemplateEngine(), new Utils());
     }
 
@@ -36,7 +31,7 @@ class MessengerTest {
         messenger = new Messenger(new MailServer(), templateEngine, utils);
         when(utils.getMapFromJsonFile(args[0])).thenReturn(tags);
         tags = messenger.getTagMap(args, template);
-        assertEquals("outputFile", tags.get("output"));
+        assertEquals("toFile", tags.get("outputMode"));
     }
 
     @Test
@@ -48,7 +43,7 @@ class MessengerTest {
         when(templateEngine.getTagsInConsoleMode(any(Scanner.class), any(Template.class))).thenReturn(tags);
         messenger = new Messenger(new MailServer(), templateEngine, new Utils());
         tags = messenger.getTagMap(args, template);
-        assertEquals("toConsole", tags.get("output"));
+        assertEquals("toConsole", tags.get("outputMode"));
     }
 
     @Test
@@ -59,9 +54,9 @@ class MessengerTest {
         messenger = new Messenger(mailServer, templateEngine, new Utils());
         Client client = mock(Client.class);
         when(client.getAddresses()).thenReturn("");
-        messenger.sendMessage(client, mock(Template.class), mock(Map.class));
-        verify(mailServer).send(anyString(), anyString());
-
+        Map<String, String> tags = mock(Map.class);
+        when(tags.get(anyString())).thenReturn("");
+        messenger.sendMessage(client, mock(Template.class),tags);
+        verify(mailServer).send(anyString(), anyString(), anyString());
     }
-
 }
