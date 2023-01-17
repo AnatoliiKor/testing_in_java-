@@ -39,9 +39,8 @@ public class MailServerTest {
     void shouldSaveMessageToFile() throws Exception {
         Path filePath = tempDir.resolve("temp.file");
         mailServer.setFile(filePath.toFile());
-        mailServer.send("name@mail.com", "message content from file", "toFile");
-        String actualTemplate = Files.readAllLines(filePath).stream()
-                .collect(Collectors.joining(System.lineSeparator()));
+        mailServer.send("name@gmail.com", "message content from file", "toFile");
+        String actualTemplate = String.join("", Files.readAllLines(filePath));
         assertTrue(actualTemplate.contains("message content from file"));
     }
 }

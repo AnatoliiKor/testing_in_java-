@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,17 +26,16 @@ class UtilsTest {
     public void readTXTFileByFileNameFromResourceFolder() {
         String fileName = "templateTest.txt";
         String text = utils.readFileAsString(fileName);
-        String contain = "Thank";
+        String contain = "Last row";
         assertTrue(text.contains(contain));
     }
 
     @Test
-    public void getMapFromJson() {
+    public void getMapOfStringsFromJsonFileByProvidedFileName() {
         String fileName = "input.json";
         Map<String, String> map = utils.getMapFromJsonFile(fileName);
         assertEquals("Ivan", map.get("receiverName"));
     }
-
 
     @Test
     public void throwExceptionWhenInputFileNotJsp() {
@@ -45,22 +43,20 @@ class UtilsTest {
     }
 
     @Test
-    void getAddressesStringFromMap() {
+    void getAddressesStringFromMapDelimitedByComma() {
         String expectedString = "one,two,three";
         Map<String, String> map = new HashMap<>();
         map.put("one", "one");
         map.put("two", "two");
         map.put("three", "three");
-        assertEquals(expectedString, utils.getAddressesStringFromMap(map));
+        assertEquals(expectedString, utils.getAddressesStringFromMapDelimitedByComma(map));
     }
-
 
     @Test
     void writeToFile() throws IOException {
         Path filePath = tempDir.resolve("temp.file");
         utils.writeToFile( "file content", filePath.toFile());
-        String actualTemplate = Files.readAllLines(filePath).stream()
-                .collect(Collectors.joining(System.lineSeparator()));
+        String actualTemplate = String.join("", Files.readAllLines(filePath));
         assertTrue(actualTemplate.contains("file content"));
     }
 }

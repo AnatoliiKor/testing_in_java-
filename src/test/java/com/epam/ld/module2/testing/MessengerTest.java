@@ -16,47 +16,44 @@ import static org.mockito.Mockito.*;
 class MessengerTest {
     Messenger messenger;
     TemplateEngine templateEngine;
+    MailServer mailServer;
+    Utils utils;
+    Map<String, String> tags;
+    Template template;
 
     @BeforeEach
     void startUp() {
-        messenger = new Messenger(new MailServer(), new TemplateEngine(), new Utils());
+        mailServer = mock(MailServer.class);
+        utils = mock(Utils.class);
+        templateEngine = mock(TemplateEngine.class);
+        template = mock(Template.class);
+        messenger = new Messenger(mailServer, templateEngine, utils);
     }
 
     @Test
-    void getTagMapForFileMode() {
+    void getTagMapByPassingTwoArgumentsWithInputAndOutputFilesSelectFileMode() {
         String[] args = {"inputFile", "outputFile"};
-        Template template = mock(Template.class);
-        Utils utils = mock(Utils.class);
-        Map<String, String> tags = new HashMap<>();
-        messenger = new Messenger(new MailServer(), templateEngine, utils);
-        when(utils.getMapFromJsonFile(args[0])).thenReturn(tags);
-        tags = messenger.getTagMap(args, template);
+        when(utils.getMapFromJsonFile(args[0])).thenReturn(new HashMap<>());
+        tags = messenger.getTagMapInTwoMods(args, template);
         assertEquals("toFile", tags.get("outputMode"));
     }
 
     @Test
-    void getTagMapForConsoleMode() {
+    void getTagMapByPassingZeroArgumentsSelectConsoleMode() {
         String[] args = {};
-        Template template = mock(Template.class);
-        templateEngine = mock(TemplateEngine.class);
-        Map<String, String> tags = new HashMap<>();
-        when(templateEngine.getTagsInConsoleMode(any(Scanner.class), any(Template.class))).thenReturn(tags);
-        messenger = new Messenger(new MailServer(), templateEngine, new Utils());
-        tags = messenger.getTagMap(args, template);
+        when(templateEngine.getTagsInConsoleMode(any(Scanner.class), any(Template.class))).thenReturn(new HashMap<>());
+        tags = messenger.getTagMapInTwoMods(args, template);
         assertEquals("toConsole", tags.get("outputMode"));
     }
 
     @Test
     void sendMessage() {
-        templateEngine = mock(TemplateEngine.class);
         when(templateEngine.generateMessage(any(Template.class), anyMap())).thenReturn("");
-        MailServer mailServer = mock(MailServer.class);
-        messenger = new Messenger(mailServer, templateEngine, new Utils());
         Client client = mock(Client.class);
         when(client.getAddresses()).thenReturn("");
-        Map<String, String> tags = mock(Map.class);
+        tags = mock(Map.class);
         when(tags.get(anyString())).thenReturn("");
-        messenger.sendMessage(client, mock(Template.class),tags);
+        messenger.sendMessage(client, template,tags);
         verify(mailServer).send(anyString(), anyString(), anyString());
     }
 }

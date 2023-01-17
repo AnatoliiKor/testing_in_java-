@@ -33,14 +33,30 @@ public class Messenger {
 
     public static void main(String[] args) {
         Messenger messenger = new Messenger(new MailServer(), new TemplateEngine(), new Utils());
-        Template template = new Template();
-        template.setTemplateBody(messenger.getUtils().readFileAsString("templateBody.txt"));
-        Client client = new Client();
-        client.setAddresses(messenger.getUtils().getAddressesStringFromMap(messenger.getUtils().getMapFromJsonFile("client.json")));
-        messenger.sendMessage(client, template, messenger.getTagMap(args, template));
+        messenger.runService(args);
     }
 
-    public Map<String, String> getTagMap(String[] args, Template template) {
+    /**
+     * Messenger  pretends to send emails using a template generator
+     *
+     * @param args   the arguments from main() method
+     */
+    public void runService(String[] args) {
+        Template template = new Template();
+        template.setTemplateBody(getUtils().readFileAsString("templateBody.txt"));
+        Client client = new Client();
+        client.setAddresses(getUtils().getAddressesStringFromMapDelimitedByComma(getUtils().getMapFromJsonFile("client.json")));
+        sendMessage(client, template, getTagMapInTwoMods(args, template));
+    }
+
+    /**
+     * Get the map with tags in console mod and reading from file. File mode is selected by passing two arguments
+     * with input and output files. If there is no arguments - console mode.
+     *
+     * @param args   the arguments from main() method
+     * @param template the message template
+     */
+    public Map<String, String> getTagMapInTwoMods(String[] args, Template template) {
         Map<String, String> tags;
 
         if (args.length == 2) {

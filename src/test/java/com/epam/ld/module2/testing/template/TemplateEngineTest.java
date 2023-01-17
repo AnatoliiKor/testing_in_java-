@@ -5,9 +5,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -15,57 +16,78 @@ import java.util.Set;
 
 
 public class TemplateEngineTest {
-    private Template template;
-    private TemplateEngine templateEngine;
+    Template template;
+    TemplateEngine templateEngine;
+    final String TEMPLATE_BODY_WITH_THREE_TAGS = "text #{receiverName} text #{client}#{receiverName} text#{company}";
+    Map<String, String> tags;
 
     @BeforeEach
     void startUp() {
         template = mock(Template.class);
-        when(template.getTemplateBody()).thenReturn("text #{receiverName} text #{client}#{receiverName} text ");
+        when(template.getTemplateBody()).thenReturn(TEMPLATE_BODY_WITH_THREE_TAGS);
         templateEngine = new TemplateEngine();
+        tags = new HashMap<>();
     }
 
     @Test
-    public void generateMessage() {
-        Map<String, String> tags = new HashMap<>();
-        tags.put("receiverName", "Ivan");
+    public void generateMessageAndReplacesTagsWithValues() {
+        tags.put("receiverName", "value");
         String templateWithoutTags = templateEngine.generateMessage(template, tags);
-        assertTrue(templateWithoutTags.contains("Ivan"));
         assertFalse(templateWithoutTags.contains("receiverName"));
+        assertTrue(templateWithoutTags.contains("value"));
     }
 
     @Test
     public void checkThatAllRequiredTagsAreProvidedToGenerateMessage() {
-        Map<String, String> map = new HashMap<>();
-        map.put("receiverName", "receiverName");
-        map.put("client", "client");
-        map.put("company", "company");
-        String templateBody = "text #{receiverName} text #{client}#{receiverName} text#{company}";
-        assertTrue(templateEngine.checkProvidedTagsForComplicity(templateBody, map));
+        tags.put("receiverName", "receiverName");
+        tags.put("client", "client");
+        tags.put("company", "company");
+        assertTrue(templateEngine.checkProvidedTagsForComplicity(TEMPLATE_BODY_WITH_THREE_TAGS, tags));
     }
 
     @Test
-    public void throwMissingTagException() {
-        Map<String, String> map = new HashMap<>();
-        map.put("receiverName", "receiverName");
-        map.put("client", "client");
-        String templateBody = "text #{receiverName} text #{client}#{receiverName} text#{company}";
-        assertThrows(MissingTagException.class, ()-> templateEngine.checkProvidedTagsForComplicity(templateBody, map));
+    public void shouldThrowMissingTagExceptionWhenNotAllTagsAreProvided() {
+        tags.put("receiverName", "receiverName");
+        tags.put("client", "client");
+        assertThrows(MissingTagException.class, () ->
+                templateEngine.checkProvidedTagsForComplicity(TEMPLATE_BODY_WITH_THREE_TAGS, tags));
     }
 
     @Test
-    public void findTags() {
-        String templateBody = "text #{receiverName} text #{client}#{receiverName} text ";
-        Set<String> tags = templateEngine.findTags(templateBody);
-        assertEquals(2, tags.size());
+    public void findTagsFromTemplateBodyAsSet() {
+        Set<String> tags = templateEngine.findTagsFromTemplateBody(TEMPLATE_BODY_WITH_THREE_TAGS);
+        assertEquals(3, tags.size());
     }
 
     @Test
-    public void creationTagMapByConsole() {
+    public void creationTagMapByConsoleWithProvidedAnswers() {
         Scanner scanner = mock(Scanner.class);
         when(scanner.nextLine()).thenReturn("answer");
-        Map<String, String> map = templateEngine.getTagsInConsoleMode(scanner, template);
-        assertEquals("answer", map.get("receiverName"));
+        tags = templateEngine.getTagsInConsoleMode(scanner, template);
+        int numberOfTagsInTemplateBody = 3;
+        assertEquals("answer", tags.get("receiverName"));
+        verify(scanner, times(numberOfTagsInTemplateBody)).nextLine();
     }
 
+    @Test
+    public void throwsMissingTagExceptionInConsoleWhenEmptyAnswers() {
+        Scanner scanner = mock(Scanner.class);
+        when(scanner.nextLine()).thenReturn("");
+        assertThrows(MissingTagException.class, () ->
+                templateEngine.getTagsInConsoleMode(scanner, template));
+    }
+
+    @Test
+    public void verifySecondRequestToEnterTagWhenEmptyAnswersBeforeMissingTagExceptionInConsole() {
+        final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        final PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(outContent));
+        Scanner scanner = mock(Scanner.class);
+        when(scanner.nextLine()).thenReturn("");
+        assertThrows(MissingTagException.class, () ->
+                templateEngine.getTagsInConsoleMode(scanner, template));
+        verify(scanner, times(2)).nextLine();
+        System.setOut(originalOut);
+        assertTrue(outContent.toString().contains("It can not be empty. Please enter again"));
+    }
 }

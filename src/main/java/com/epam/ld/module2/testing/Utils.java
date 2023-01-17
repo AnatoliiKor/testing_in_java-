@@ -12,8 +12,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Utils {
 
@@ -21,10 +19,7 @@ public class Utils {
     public String readFileAsString(String fileName) {
         try {
             Path path = Paths.get(Objects.requireNonNull(Messenger.class.getClassLoader().getResource(fileName)).toURI());
-            Stream<String> lines = Files.lines(path);
-            String data = lines.collect(Collectors.joining("\n"));
-            lines.close();
-            return data;
+            return String.join("\n", Files.readAllLines(path));
         } catch (Exception e) {System.err.println(e.getMessage());}
         return "";
     }
@@ -46,7 +41,7 @@ public class Utils {
      * @param addressesMap the map of strings with addresses
      * @return the String
      */
-    public String getAddressesStringFromMap(Map<String, String> addressesMap) {
+    public String getAddressesStringFromMapDelimitedByComma(Map<String, String> addressesMap) {
         return String.join(",", addressesMap.values());
     }
 

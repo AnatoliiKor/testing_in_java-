@@ -1,6 +1,5 @@
 package com.epam.ld.module2.testing.template;
 
-import com.epam.ld.module2.testing.Client;
 import com.epam.ld.module2.testing.exception.MissingTagException;
 
 import java.util.*;
@@ -34,7 +33,7 @@ public class TemplateEngine {
      * @param templateBody the text from template
      * @return the set of tags as strings
      */
-    Set<String> findTags(String templateBody) {
+    Set<String> findTagsFromTemplateBody(String templateBody) {
         Set<String> tags = new TreeSet<>();
         Pattern pattern = Pattern.compile("(#\\{)(.+?)(})");
         Matcher matcher = pattern.matcher(templateBody);
@@ -52,16 +51,29 @@ public class TemplateEngine {
      */
     public Map<String, String> getTagsInConsoleMode(Scanner sc, Template template) {
         Map<String, String> tags = new HashMap<>();
-        Set<String> rawTags = findTags(template.getTemplateBody());
+        Set<String> rawTags = findTagsFromTemplateBody(template.getTemplateBody());
         rawTags.forEach(rawTag -> {
             System.out.println("Enter " + rawTag);
-            tags.put(rawTag, sc.nextLine());
+            String answer = sc.nextLine();
+            if (answer.isEmpty()) {
+                System.out.println("It can not be empty. Please enter again " + rawTag);
+                answer = sc.nextLine();
+                if (answer.isEmpty()) throw new MissingTagException("Tag can not be empty");
+            }
+            tags.put(rawTag, answer);
         });
         return tags;
     }
 
+    /**
+     * Check that all required tags are provided or throw MissingTagException.
+     *
+     * @param templateBody the raw text of the template
+     * @param providedTags the map with provided tags
+     * @return true or MissingTagException
+     */
     public boolean checkProvidedTagsForComplicity(String templateBody, Map<String, String> providedTags) {
-        Set<String> requiredTags = findTags(templateBody);
+        Set<String> requiredTags = findTagsFromTemplateBody(templateBody);
         requiredTags.forEach(tag -> {
             if (providedTags.get(tag) == null) throw new MissingTagException("tag is missing: " + tag);
         });
