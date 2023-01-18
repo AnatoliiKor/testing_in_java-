@@ -13,10 +13,10 @@ public class MailServer {
      *
      * @param addresses      the addresses
      * @param messageContent the message content
-     * @param outputMode     the target of the output is either "toConsole" or "toFile"
+     * @param outputMode     the target of the output is either "toConsole" or Constants.TO_FILE
      */
     public void send(String addresses, String messageContent, String outputMode) {
-        if ("toFile".equals(outputMode)) {
+        if (Constants.TO_FILE.equals(outputMode)) {
             new Utils().writeToFile(messageContent, file);
             System.out.println("Message was saved to " + file);
         } else {

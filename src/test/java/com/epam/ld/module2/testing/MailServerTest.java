@@ -8,7 +8,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,7 +28,7 @@ public class MailServerTest {
         final PrintStream originalOut = System.out;
         System.setOut(new PrintStream(outContent));
         String messageContent = "message content from console";
-        mailServer.send("name@gmail.com", messageContent, "toConsole");
+        mailServer.send("name@gmail.com", messageContent, Constants.TO_CONSOLE);
         String actual = outContent.toString();
         System.setOut(originalOut);
         assertTrue(actual.contains(messageContent));
@@ -39,7 +38,7 @@ public class MailServerTest {
     void shouldSaveMessageToFile() throws Exception {
         Path filePath = tempDir.resolve("temp.file");
         mailServer.setFile(filePath.toFile());
-        mailServer.send("name@gmail.com", "message content from file", "toFile");
+        mailServer.send("name@gmail.com", "message content from file", Constants.TO_FILE);
         String actualTemplate = String.join("", Files.readAllLines(filePath));
         assertTrue(actualTemplate.contains("message content from file"));
     }

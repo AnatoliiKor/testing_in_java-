@@ -1,8 +1,11 @@
 package com.epam.ld.module2.testing.template;
 
+import com.epam.ld.module2.testing.TestWatcherExtension;
 import com.epam.ld.module2.testing.exception.MissingTagException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -14,7 +17,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-
+@ExtendWith(TestWatcherExtension.class)
 public class TemplateEngineTest {
     Template template;
     TemplateEngine templateEngine;
@@ -30,6 +33,7 @@ public class TemplateEngineTest {
     }
 
     @Test
+    @Tag("UnitTest")
     public void generateMessageAndReplacesTagsWithValues() {
         tags.put("receiverName", "value");
         String templateWithoutTags = templateEngine.generateMessage(template, tags);
@@ -38,6 +42,7 @@ public class TemplateEngineTest {
     }
 
     @Test
+    @Tag("UnitTest")
     public void checkThatAllRequiredTagsAreProvidedToGenerateMessage() {
         tags.put("receiverName", "receiverName");
         tags.put("client", "client");
@@ -46,6 +51,7 @@ public class TemplateEngineTest {
     }
 
     @Test
+    @Tag("UnitTest")
     public void shouldThrowMissingTagExceptionWhenNotAllTagsAreProvided() {
         tags.put("receiverName", "receiverName");
         tags.put("client", "client");
@@ -54,12 +60,14 @@ public class TemplateEngineTest {
     }
 
     @Test
+    @Tag("UnitTest")
     public void findTagsFromTemplateBodyAsSet() {
         Set<String> tags = templateEngine.findTagsFromTemplateBody(TEMPLATE_BODY_WITH_THREE_TAGS);
         assertEquals(3, tags.size());
     }
 
     @Test
+    @Tag("UnitTest")
     public void creationTagMapByConsoleWithProvidedAnswers() {
         Scanner scanner = mock(Scanner.class);
         when(scanner.nextLine()).thenReturn("answer");
@@ -70,6 +78,7 @@ public class TemplateEngineTest {
     }
 
     @Test
+    @Tag("UnitTest")
     public void throwsMissingTagExceptionInConsoleWhenEmptyAnswers() {
         Scanner scanner = mock(Scanner.class);
         when(scanner.nextLine()).thenReturn("");
@@ -78,7 +87,8 @@ public class TemplateEngineTest {
     }
 
     @Test
-    public void verifySecondRequestToEnterTagWhenEmptyAnswersBeforeMissingTagExceptionInConsole() {
+    @Tag("UnitTest")
+    public void verifySecondRequestToEnterTagWhenEmptyAnswerBeforeMissingTagExceptionInConsole() {
         final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         final PrintStream originalOut = System.out;
         System.setOut(new PrintStream(outContent));

@@ -21,6 +21,7 @@ public class Messenger {
      *
      * @param mailServer     the mail server
      * @param templateEngine the template engine
+     * @param utils the utils
      */
     public Messenger(MailServer mailServer,
                      TemplateEngine templateEngine,
@@ -55,6 +56,7 @@ public class Messenger {
      *
      * @param args   the arguments from main() method
      * @param template the message template
+     * @return the map of tags
      */
     public Map<String, String> getTagMapInTwoMods(String[] args, Template template) {
         Map<String, String> tags;
@@ -62,15 +64,14 @@ public class Messenger {
         if (args.length == 2) {
             String inputJsonTagFile = args[0];
             tags = utils.getMapFromJsonFile(inputJsonTagFile);
-            tags.put("outputMode", "toFile");
+            tags.put(Constants.OUTPUT_MODE, Constants.TO_FILE);
             this.getMailServer().setFile(new File(args[1]));
         } else {
-            tags = templateEngine.getTagsInConsoleMode(new Scanner(System.in), template);
-            tags.put("outputMode", "toConsole");
+            tags = templateEngine.getTagsInConsoleMode(new Scanner(System.in, "ISO-8859-1"), template);
+            tags.put(Constants.OUTPUT_MODE, Constants.TO_CONSOLE);
         }
         return tags;
     }
-
 
     /**
      * Send message.
@@ -81,7 +82,7 @@ public class Messenger {
      */
     public void sendMessage(Client client, Template template, Map<String, String> tags) {
         String messageContent = templateEngine.generateMessage(template, tags);
-        mailServer.send(client.getAddresses(), messageContent, tags.get("outputMode"));
+        mailServer.send(client.getAddresses(), messageContent, tags.get(Constants.OUTPUT_MODE));
     }
 
     public Utils getUtils() {

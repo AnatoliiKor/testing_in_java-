@@ -1,7 +1,9 @@
 package com.epam.ld.module2.testing;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
@@ -12,6 +14,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(TestWatcherExtension.class)
 class UtilsTest {
     Utils utils;
     @TempDir
@@ -23,6 +26,7 @@ class UtilsTest {
     }
 
     @Test
+    @Tag("UtilsTest")
     public void readTXTFileByFileNameFromResourceFolder() {
         String fileName = "templateTest.txt";
         String text = utils.readFileAsString(fileName);
@@ -31,6 +35,7 @@ class UtilsTest {
     }
 
     @Test
+    @Tag("UtilsTest")
     public void getMapOfStringsFromJsonFileByProvidedFileName() {
         String fileName = "input.json";
         Map<String, String> map = utils.getMapFromJsonFile(fileName);
@@ -38,11 +43,13 @@ class UtilsTest {
     }
 
     @Test
+    @Tag("UtilsTest")
     public void throwExceptionWhenInputFileNotJsp() {
         assertThrows(RuntimeException.class, ()-> utils.getMapFromJsonFile("templateTest.txt"));
     }
 
     @Test
+    @Tag("UtilsTest")
     void getAddressesStringFromMapDelimitedByComma() {
         String expectedString = "one,two,three";
         Map<String, String> map = new HashMap<>();
@@ -53,6 +60,7 @@ class UtilsTest {
     }
 
     @Test
+    @Tag("UtilsTest")
     void writeToFile() throws IOException {
         Path filePath = tempDir.resolve("temp.file");
         utils.writeToFile( "file content", filePath.toFile());

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,7 +16,12 @@ import java.util.Objects;
 
 public class Utils {
 
-
+    /**
+     * Read file and returns it content as string.
+     *
+     * @param fileName the name of file
+     * @return the String
+     */
     public String readFileAsString(String fileName) {
         try {
             Path path = Paths.get(Objects.requireNonNull(Messenger.class.getClassLoader().getResource(fileName)).toURI());
@@ -24,6 +30,12 @@ public class Utils {
         return "";
     }
 
+    /**
+     * Get the map with tags as strings from json file.
+     *
+     * @param jsonFile the name of json file
+     * @return the Map of tags
+     */
     public Map<String, String> getMapFromJsonFile(String jsonFile) {
         Map<String, String> result;
         String tagString = readFileAsString(jsonFile);
@@ -51,9 +63,9 @@ public class Utils {
      * @param messageContent the content for writing.
      */
     public void writeToFile(String messageContent, File fileName) {
-        try (PrintWriter out = new PrintWriter(fileName)) {
+        try (PrintWriter out = new PrintWriter(fileName, "ISO-8859-1")) {
            out.println(messageContent);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

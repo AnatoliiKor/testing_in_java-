@@ -21,8 +21,8 @@ public class TemplateEngine {
     public String generateMessage(Template template, Map<String, String> tags) {
         String result = template.getTemplateBody();
 
-        for (String s : tags.keySet()) {
-            result = result.replaceAll("#\\{" + s + "}", tags.get(s));
+        for (Map.Entry<String, String> s : tags.entrySet()) {
+            result = result.replaceAll("#\\{" + s.getKey() + "}", tags.get(s.getKey()));
         }
         return result;
     }
@@ -47,6 +47,7 @@ public class TemplateEngine {
      * Request tags from user by console.
      *
      * @param sc the Scanner instance
+     * @param template the Template instance
      * @return the map of tags
      */
     public Map<String, String> getTagsInConsoleMode(Scanner sc, Template template) {
@@ -58,7 +59,9 @@ public class TemplateEngine {
             if (answer.isEmpty()) {
                 System.out.println("It can not be empty. Please enter again " + rawTag);
                 answer = sc.nextLine();
-                if (answer.isEmpty()) throw new MissingTagException("Tag can not be empty");
+                if (answer.isEmpty()) {
+                    throw new MissingTagException("Tag can not be empty");
+                }
             }
             tags.put(rawTag, answer);
         });
@@ -75,7 +78,9 @@ public class TemplateEngine {
     public boolean checkProvidedTagsForComplicity(String templateBody, Map<String, String> providedTags) {
         Set<String> requiredTags = findTagsFromTemplateBody(templateBody);
         requiredTags.forEach(tag -> {
-            if (providedTags.get(tag) == null) throw new MissingTagException("tag is missing: " + tag);
+            if (providedTags.get(tag) == null) {
+                throw new MissingTagException("tag is missing: " + tag);
+            }
         });
         return true;
     }

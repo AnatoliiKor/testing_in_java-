@@ -4,6 +4,10 @@ import com.epam.ld.module2.testing.template.Template;
 import com.epam.ld.module2.testing.template.TemplateEngine;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Spy;
 
@@ -13,7 +17,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -21,6 +24,7 @@ import java.util.Scanner;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(TestWatcherExtension.class)
 public class MessengerIntegrationTest {
     @Spy
     TemplateEngine templateEngine;
@@ -29,9 +33,9 @@ public class MessengerIntegrationTest {
     @TempDir
     static Path tempDir;
 
-
     @Test
     @Tag("IntegrationTest")
+    @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_13)
     public void testSendingMessageInConsoleMode() {
         String[] args = {};
         Map<String, String> tags = new HashMap<>();
@@ -53,9 +57,9 @@ public class MessengerIntegrationTest {
         assertTrue(actual.contains("Thank you again for your interest"));
     }
 
-
     @Test
     @Tag("IntegrationTest")
+    @DisabledForJreRange(min = JRE.JAVA_14, max = JRE.JAVA_15)
     public void testSendingMessageInFileMode() throws IOException {
         String outputFile = "output_integration_test.txt";
         String[] args = {"input.json", outputFile};
@@ -70,17 +74,5 @@ public class MessengerIntegrationTest {
 
         String actualTemplate = String.join("", Files.readAllLines(filePath));
         assertTrue(actualTemplate.contains("Thank you again for your interest in Global Systems"));
-
     }
-
-    private void startMain(String[] args, Messenger messenger) {
-        Template template = new Template();
-        template.setTemplateBody(messenger.getUtils().readFileAsString("templateTest.txt"));
-        Client client = new Client();
-        client.setAddresses(messenger.getUtils().getAddressesStringFromMapDelimitedByComma(messenger.getUtils().getMapFromJsonFile("client.json")));
-        messenger.sendMessage(client, template, messenger.getTagMapInTwoMods(args, template));
-    }
-
-
-
 }
